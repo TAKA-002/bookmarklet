@@ -3,9 +3,9 @@
 // ・各要素のcomputedStyleを取得する
 // ・すべてのプロパティを対象にする
 
-// if (confirm("このページの全スタイルを取得してクリップボードにコピーしますか？")) {
-//   new PageStyle();
-// }
+if (confirm("このページの全スタイルを取得してJSONファイルをダウンロードしますか？")) {
+  new PageStyle();
+}
 
 class PageStyle {
   constructor() {
@@ -26,7 +26,8 @@ class PageStyle {
     });
 
     const json = JSON.stringify(returnObj, null, 2);
-    this.createFileName();
+    const filename = this.createFileName();
+    this.downloadJsonFile(json, filename);
 
     // navigator.clipboard.writeText(JSON.stringify(returnObj, null, 2))
     //   .then(() => {
@@ -67,6 +68,16 @@ class PageStyle {
     const fmtDate = `${ymd.replaceAll("/", "-")}T${hms.replaceAll(":", "-")}`;
     return `styles_${hostname}_${fmtDate}.json`;
   }
-}
 
-new PageStyle();
+  downloadJsonFile(json, filename) {
+    const blob = new Blob([json], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+}
